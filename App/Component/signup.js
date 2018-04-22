@@ -43,7 +43,7 @@ class SignupDemo extends Component {
     _signUp = () => {
         let { navigate } = this.props.navigation;
         console.log(navigate);
-        this.props.signup(this.state.name, this.state.email, this.state.password, this.replaceScreen);
+        this.props.signup(this.state.name, this.state.email, this.state.password, navigate);
     }
     render() {
         return (

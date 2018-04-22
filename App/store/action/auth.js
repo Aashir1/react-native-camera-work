@@ -10,7 +10,7 @@ export default class AuthActions {
                     console.log(user._user);
                     console.log(navigate);
                     dispatch(AuthActions.loginSucceed(user._user));
-                    navigate('Camera');
+                    navigate('Tabes');
                 })
                 .catch((error) => {
                     // dispatch(AuthActions.isError());
@@ -31,7 +31,7 @@ export default class AuthActions {
                             dispatch(AuthActions.loginSucceed(user._user));
                             console.log(user);
                             console.log(navigate);
-                            navigate('Camera');
+                            navigate('Tabes');
                         })
                         // .catch(error => {
                         //     dispatch(AuthActions.signupSucceed());
@@ -44,13 +44,32 @@ export default class AuthActions {
         }
     }
 
+    static loadImages(currentUser){
+
+        return (dispatch) =>{
+            dispatch({type: actionType.LOAD_IAMGE_AGAIN});
+            firebase.database().ref(`/cameraWork/${currentUser.uid}`).once('value', datasnapshot=>{
+                let obj = datasnapshot._value;
+                Object.keys(obj).map(data=> dispatch(AuthActions.loadImage(obj[data]) ));
+            })
+        }
+    }
+
     static signOut(navigate){
+        console.log('navigate chala: ' ,navigate)
         firebase.auth().signOut()
         .then(user=>{
             navigate('Login');
         })
     }
 
+
+    static loadImage(image){
+        return{
+            type: actionType.LOAD_IMAGES,
+            image
+        }
+    }
     static loginRequest() {
         return {
             type: actionType.LOGIN_REQUEST

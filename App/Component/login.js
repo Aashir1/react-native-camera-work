@@ -24,7 +24,8 @@ class LoginDemo extends Component {
 
         firebase.auth().onAuthStateChanged((user)=>{
             if(user){
-                this.replaceScreen('Camera');
+                this.props.loadUser(user._user);
+                this.props.navigation.navigate('Tabes');
             }
         })
     }
@@ -42,7 +43,7 @@ class LoginDemo extends Component {
         // const { locations, position } = this.props.navigation.state.params;
         this.props.navigation.dispatch({
             type: 'ReplaceCurrentScreen',
-            key: `${route}`,
+            key: null,
             routeName: `${route}`,
             // params: { locations, position },
         });
@@ -52,7 +53,7 @@ class LoginDemo extends Component {
     _login = () => {
         let { navigate } = this.props.navigation;
         console.log(navigate);
-        this.props.login(this.state.email, this.state.password, this.replaceScreen);
+        this.props.login(this.state.email, this.state.password, navigate);
     }
     render() {
         return (
@@ -123,7 +124,8 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
     return{
-        login: (email, password, navigate)=> dispatch(AuthActions.login(email, password, navigate))
+        login: (email, password, navigate)=> dispatch(AuthActions.login(email, password, navigate)),
+        loadUser: (user) => dispatch(AuthActions.loginSucceed(user)),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(LoginDemo);

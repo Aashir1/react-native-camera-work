@@ -5,11 +5,14 @@
  */
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View, TextInput, Button } from 'react-native';
+import { Platform, StyleSheet, View, TextInput, Button, Modal, Image, ScrollView } from 'react-native';
 import { Container, Header, Content, Badge, Text, Icon, Form, Item, Input, Label } from 'native-base';
 import firebase from 'react-native-firebase';
 import { connect } from 'react-redux';
 import AuthActions from '../store/action/auth';
+import { NavigationActions } from 'react-navigation';
+import ImageViewer from 'react-native-image-zoom-viewer';
+
 
 class Home extends Component {
     constructor(props) {
@@ -18,6 +21,7 @@ class Home extends Component {
             email: '',
             password: ''
         }
+        this.props.loadImages(this.props.currentUser);
     }
     static navigationOptions = {
         title: 'Home',
@@ -35,6 +39,29 @@ class Home extends Component {
         headerRight: (<View></View>)
     };
 
+    signOut = () => {
+        firebase.auth().signOut()
+            .then(user => {
+                console.log(user);
+
+                this.reset('Auth');
+            })
+            .catch(error => {
+                alert(error.message);
+            })
+    }
+
+    reset = (route, data) => {
+        return this.props
+            .navigation
+            .dispatch(NavigationActions.reset(
+                {
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: `${route}` }, data)
+                    ]
+                }));
+    }
     render() {
         let { navigate } = this.props.navigation;
         return (
@@ -42,7 +69,21 @@ class Home extends Component {
                 <Text style={styles.welcome}>
                     Welcome to React Native!
                 </Text>
-                <Button title='signOut' onPress={(navigate) => this.props.signOut(navigate)} />
+                <Button title='signOut' onPress={this.signOut} />
+                <ScrollView>
+                {
+                    this.props.images.map((data, i) => {
+                        console.log(data);
+                        return (
+                            <Image
+                                key={i}
+                                style={{ width: 300, height: 300 }}
+                                source={{ uri: data.url }}
+                            />
+                        )
+                    })
+                }
+                </ScrollView>
             </View>
         );
     }
@@ -95,11 +136,15 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
     console.log(state)
     return {
+        currentUser: state.authReducer.currentUser,
+        images: state.authReducer.images
+
     }
 }
 function mapDispatchToProps(dispatch) {
     return {
-        signOut: (navigate) => dispatch(AuthActions.signOut(navigate))
+        signOut: (navigate) => dispatch(AuthActions.signOut(navigate)),
+        loadImages: (currentUser) => dispatch(AuthActions.loadImages(currentUser)),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

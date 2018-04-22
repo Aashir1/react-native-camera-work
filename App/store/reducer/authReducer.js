@@ -1,7 +1,8 @@
 import actionType from '../constants/constant';
 let initialState = {
     progressBar: false,
-    currentUser: {}
+    currentUser: {},
+    images: [],
 }
 
 function authReducer(state = initialState, action) {
@@ -18,6 +19,12 @@ function authReducer(state = initialState, action) {
 
         case actionType.SIGNUP_SUCCEED:
             return Object.assign({}, state, { progressBar: false });
+
+        case actionType.LOAD_IMAGES:
+            return Object.assign({}, state, {images: [...state.images, action.image]});
+
+        case actionType.LOAD_IAMGE_AGAIN:
+            return Object.assign({}, state, {image:[]});
 
         default:
             return state;

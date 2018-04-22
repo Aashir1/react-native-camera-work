@@ -19,58 +19,75 @@ const AuthStack = StackNavigator(
     LogIn: {
       screen: LoginDemo,
     },
-    Home:{
-      screen: Home
-    },
-    Camera:{
-      screen: Camera
-    }
   },
   {
     initialRouteName: 'LogIn',
+    // headerMode: 'none'
   }
 );
 
+const Routes = StackNavigator({
+  Auth: {
+    screen: AuthStack
+  },
+  Tabes: {
+    screen: TabNavigator({
+      Camera: {
+        screen: Camera
+      },
+      Home: {
+        screen: Home
+      },
+    },
+      {
+        initialRouteName: 'Camera',
+        // headerMode: 'none'
+      }
+    )
+  },
+},
+  {
+    headerMode: 'none'
+  })
+
+/* ***************************************** For History.replace functionality ********************************* */
+// const prevGetStateForActionHomeStack = Routes.router.getStateForAction;
+// Routes.router.getStateForAction = (action, state) => {
+//   if (state && action.type === 'ReplaceCurrentScreen') {
+//     const routes = state.routes.slice(0, state.routes.length - 1);
+//     routes.push(action);
+//     return {
+//       ...state,
+//       routes,
+//       index: routes.length - 1,
+//     };
+//   }
+//   return prevGetStateForActionHomeStack(action, state);
+// };
 const Tabs = TabNavigator({
-  Home : {
+  Home: {
     screen: Home
   },
-  Tab1:{
-    screen: Tab1
+  Camera: {
+    screen: Camera
   },
-  Tab2:{
-    screen: Tab2
-  }
-})
+});
 
 export default class App extends React.Component {
   render() {
-    try{
+    try {
       return (
         <Provider store={store}>
-          <AuthStack /> 
+          <Routes />
         </Provider>
-    );
-    } catch(error){
+      );
+    } catch (error) {
       alert(error);
     }
   }
 }
 
 
-const prevGetStateForActionHomeStack = AuthStack.router.getStateForAction;
-AuthStack.router.getStateForAction = (action, state) => {
-  if (state && action.type === 'ReplaceCurrentScreen') {
-    const routes = state.routes.slice(0, state.routes.length - 1);
-    routes.push(action);
-    return {
-      ...state,
-      routes,
-      index: routes.length - 1,
-    };
-  }
-  return prevGetStateForActionHomeStack(action, state);
-};
 
 // export default class App extends React.Component {
 //   render() {

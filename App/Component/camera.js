@@ -18,12 +18,16 @@ import RNFetchBlob from 'react-native-fetch-blob'
 
 class Camera extends Component {
 
+  constructor(props){
+    super(props);
+    // this.props.loadImages(this.props.currentUser);
+  }
   signOut = () => {
     firebase.auth().signOut()
       .then(user => {
         console.log(user);
 
-        this.reset('LogIn');
+        this.reset('Auth');
       })
       .catch(error => {
         alert(error.message);
@@ -73,6 +77,7 @@ class Camera extends Component {
       .then((url) => {
         // URL of the image uploaded on Firebase storage
         // console.log("4")
+        console.log('uploading')
         firebase.database().ref(`/cameraWork/${this.props.currentUser.uid}`).push({url});
         
         console.log(url);
@@ -94,7 +99,7 @@ class Camera extends Component {
           }}
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
+          flashMode={RNCamera.Constants.FlashMode.off}
           permissionDialogTitle={'Permission to use camera'}
           permissionDialogMessage={'We need your permission to use your camera phone'}
         />
@@ -163,7 +168,8 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return {
-    signOut: (navigate) => dispatch(AuthActions.signOut(navigate))
+    signOut: (navigate) => dispatch(AuthActions.signOut(navigate)),
+    loadImages: (currentUser) => dispatch(AuthActions.loadImages(currentUser)),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Camera);
